@@ -4,9 +4,13 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 
-#Load Qwen2.5-1.5B-Instruct 
+#load Qwen2.5-1.5B-Instruct 
 MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-1.5B-Instruct")
 DEVICE = "cpu"   
+
+#enhance to model speed
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+torch.set_grad_enabled(False)
 
 print(f"[info] Loading model: {MODEL_NAME} on CPU (FP32)...")
 
@@ -27,22 +31,22 @@ model.eval()
 print("[info] Model loaded successfully.")
 
 
-#Flask app
+#flask app
 app = Flask(__name__, template_folder="templates")
 
-
+#home
 @app.get("/")
 def home():
     return render_template("index.html")
 
-
+#health check
 @app.get("/health")
 def health():
     return jsonify({"status": "ok", "model": MODEL_NAME}), 200
 
 
 #this function generate  chat reply using Qwen2.5 chat template.
-def generate_reply(user_text: str, max_new_tokens=256):
+def generate_reply(user_text: str, max_new_tokens=128):
     messages = [
         {"role": "system", "content": "You are a concise helpful assistant."},
         {"role": "user", "content": user_text},
@@ -69,7 +73,7 @@ def generate_reply(user_text: str, max_new_tokens=256):
     text = tokenizer.decode(generated_ids, skip_special_tokens=True)
     return text.strip()
 
-
+#Qwen chat
 @app.post("/api/chat")
 def chat():
     data = request.get_json(silent=True) or {}

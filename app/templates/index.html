@@ -14,6 +14,7 @@
       color: #222;
       display: flex;
       flex-direction: column;
+      align-items: center;
       padding-top: 40px;
     }
 
@@ -113,6 +114,68 @@
     #composer button:hover {
       background: #111;
     }
+
+    #footer {
+      margin-top: 20px;
+      font-size: 12PX;
+      color: #777;
+      text-align: center;
+    }
+
+    body.dark {
+      background: #121212;
+      color: #eee;
+    }
+
+    body.dark header h1 {
+      color:#ffffff;
+    }
+
+    main.dark {
+      background: #1e1e1e;
+      border-color: #333;
+    }
+
+    .bubble.bot.dark {
+      background: #2a2a2a;
+      border-color: #444;
+      color: #eee;
+    }
+
+    .bubble.user.dark {
+      background: #1a1a1a;
+      border-color: #555;
+      color: #fff;
+    }
+
+    #composer input.dark {
+      background: #1f1f1f;
+      border-color: #444;
+      color: #eee;
+    }
+
+    #composer button.dark {
+      background: #444;
+      color: #fff;
+    }
+
+    #composer button.dark:hover {
+      background: #222;
+    }
+
+    body.dark #footer {
+        color: #ccc;
+    }
+
+    #theme-toggle {
+      margin-bottom: 20px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #333;
+      color: white;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -120,6 +183,7 @@
     <header>
       <h1>Qwen Chat</h1>
       <p class="subtitle">A lightweight chat interface powered by Qwen2.5-1.5B</p>
+      <button id="theme-toggle">Dark Mode</button>
     </header>
 
     <main id="chat">
@@ -142,6 +206,11 @@
         b.textContent = text;
         messages.appendChild(b);
         messages.scrollTop = messages.scrollHeight;
+
+        //dark mode
+        if (document.body.classList.contains("dark")) {
+          b.classList.add("dark");
+        }
       }
 
       form.addEventListener("submit", async (e) => {
@@ -166,8 +235,36 @@
           addBubble("Error contacting server.", "bot");
         }
       });
-    </script>
 
+      const toggle = document.getElementById("theme-toggle");
+      toggle.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+        document.querySelector("main").classList.toggle("dark");
+        input.classList.toggle("dark");
+        document.querySelector("#composer button").classList.toggle("dark");
+
+        document.querySelectorAll(".bubble").forEach(b => b.classList.toggle("dark"));
+
+        toggle.textContent =
+          document.body.classList.contains("dark")
+            ? "Light Mode"
+            : "Dark Mode";
+      });
+
+      //welecome message
+      window.addEventListener("DOMContentLoaded", async () => {
+        addBubble("...", "bot");
+        await new Promise(resolve => setTimeout(resolve, 600));
+        messages.lastChild.textContent = "Hello! I'm Qwen — ask me anything.";
+      });
+    </script>
 </body>
+
+<footer id="footer">
+  © 2025 Henry You. Qwen Chat interface. All rights reserved.
+</footer>
+
 </html>
+
+
 
