@@ -197,4 +197,5 @@ Planned improvements:
 
 # VII. Links 
 GitHub Repo: https://github.com/Vienlendank/final-case-study
+
 Public Cloud App (Render): https://qwen25-chat-latest.onrender.com
