@@ -1,72 +1,188 @@
-1) Executive Summary
+# I. Executive Summary
 
-Problem
+## Problem
 
 Companies and researchers often need a local, self-contained large language model that can be deployed without API keys or cloud dependencies to protect sensitive data and avoid external service costs. In our earlier case study, deploying a model on a virtual machine and wiring it to an Azure-hosted Flask service created an unnecessarily complicated setup for beginners. Furthermore, Many LLM demos rely on multiple moving parts, Flask backends, separate model servers like vLLM or Ollama, and sometimes databases, which increases operational complexity and raises the barrier to entry for students and new practitioners.
 
-Solution
+## Solution
 
 This project packages a complete Qwen2.5-1.5B-Instruct chat system into one Docker container. A minimal Flask server serves as the backend, exposing a /api/chat endpoint and /api/health, and a clean HTML frontend provides a professional interface. The Qwen model is loaded directly in the Docker container using HuggingFace Transformers, which run entirely on CPU. This case study produces a reproducible, self-contained LLM microservice that can run locally or on an Azure VM with a single command.
 
-2) System Overview
+---
 
-Course Concepts This Case Study Directly Uses:
-    1. Docker
-    2. Local LLM Serving
-    3. Flask API
-    4. Azure Website Deployment
+# II. System Overview
 
-Architecture Diagram: 
+## Course Concepts Used
 
-Data/Models/Services: 
+1. **Docker** – the entire app (frontend, backend, and model) is containerized.
+2. **Local LLM Serving** – Qwen2.5-0.5B-Instruct runs fully locally on CPU.
+3. **Flask API** – provides /api/chat endpoint for model inference.
+4. **Render Cloud Deployment** – final container deployed using Render Web Services.
 
-3) How to Run (Local)
+## Architecture Diagram
+```    
++--------------------------------------------------------------+
+|                          Browser UI                          |
+|            (HTML / CSS / JavaScript Chat Interface)          |
++--------------------------------------------------------------+
+                              |
+                              |  POST /api/chat
+                              v
++--------------------------------------------------------------+
+|                         Flask Backend                        |
+|                     (Python 3.11 / Flask 3)                  |
++--------------------------------------------------------------+
+                              |
+                              |  Uses Transformers API
+                              v
++--------------------------------------------------------------+
+|           Qwen2.5-0.5B-Instruct Model (FP16, CPU)            |
+|   HuggingFace Transformers • Local Model • No External API   |
++--------------------------------------------------------------+
+                              |
+                              |  Generated JSON
+                              v
++--------------------------------------------------------------+
+|                       JSON Chat Response                     |
+|             (Returned to Browser → Rendered as bubbles)      |
++--------------------------------------------------------------+
+```
+
+## **Data / Models / Services**
+
+| Component    | Description    |
+|---|---|
+| **Model**    | Qwen/Qwen2.5-0.5B-Instruct    |
+| **Source**    | https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct    |
+| **Size**    | ~3 GB FP32    |
+| **Format**    | HuggingFace Transformers (PyTorch)    |
+| **License**    | Qwen License 2.0    |
+
+License URL https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct/blob/main/LICENSE
+
+Frontend:
+– Pure HTML/CSS/JS
+– Optional dark/light mode toggle
+
+Backend:
+– Python 3.11
+– Flask 3.0
+– Transformers 4.47
+– Torch (CPU-only FP16)
+
+Containerization:
+– Base image: python:3.11-slim
+– Minimum recommended: 1 CPU / 8–16GB RAM
+
+---
+
+# III. How to Run (Local)
+
+## Docker
+
+### 1. Build the image
+```{ssh}
+ docker build -t qwen-chat .
+```
+ 
+### 2. Run the container
+```{ssh}
+ docker run --rm -p 8080:8080 qwen-chat
+```
+
+### 3. Open in browser
+
+```{ssh}
+ "http://localhost:8080"
+```
+
+### 4. Optional health check
+```{ssh}
+ curl http://localhost:8080/health
+```
 
 
-4) Design Decisions
-Why this concept:
-I wanted a system that demonstrates local-first LLM inference, a single-container microservice, reproducibility across personal laptop and Azure VMs. Therefore, embedding the model directly into the Flask container is simpler than running an external model server such as vLLM or Ollama.
+---
 
-Alternatives Considered
-Alternative
-Why Not Used
-vLLM server
-Requires >16GB RAM even for small models; slower startup; unnecessary complexity.
-Ollama
-Does not support Qwen2.5 yet; not part of course tools.
-Multi-container (Flask + Model server)
-Higher complexity, more networking, not needed for a single model demo.
+# IV. Design Decisions
 
+## Why This Concept?
 
-Tradeoffs
-Performance: CPU inference is slow but predictable and low-cost.
+1. **Security & Independence**  
+   Many organizations cannot send sensitive data to API-based LLMs. Running Qwen2.5 locally inside a Docker container eliminates external dependencies and allows full data control.
 
-Cost: Runs on the free tier Azure VM (Standard B1s/B2s).
+2. **Beginner-Friendly Deployment**  
+   The previous case study required an Azure VM, SSH setup, and multiple running services. This version reduces everything to one container, one Flask API, and one front-end file.
 
-Complexity: One container = fewer moving parts.
+3. **Reproducibility**  
+   A Docker image ensures anyone can run the system with a single command, without worrying about Python environments, CUDA conflicts, or dependency drift.
 
-Maintainability: Model updates require rebuilding the image.
+## Tradeoffs
 
-Security & Privacy
-No API keys required.
+- **Performance:**  
+  CPU inference is slow relative to GPU.
 
-No data stored on disk.
+- **Cost:**  
+  Hosting on cloud providers requires higher RAM; CPU hosting reduces expenses.
 
-Only /api/chat is exposed.
+- **Complexity:**  
+  One container means fewer moving parts.
 
-Flask input sanitized (simple JSON only).
+- **Maintainability:**  
+  Model upgrades require rebuilding the container.
 
-Limitations
-Qwen2.5-1.5B is still large → slow inference on CPU.
+## Security & Privacy
 
-Container size ~3GB due to model.
+- No API keys or secrets required.
 
-Azure deployment requires 5-10 min cold boot time for loading.
+- No user data written to disk.
 
-6. What’s Next
+- Only /api/chat exposed.
+
+- Flask input sanitized (simple JSON only).
+
+## Limitations
+
+- Response latency is noticeable on CPU.
+
+- Container size is large (~2–3 GB).
+
+- Cold boot times can be slow on cloud (model load = 20–50 seconds).
+
+- Qwen2.5-1.5B has limited reasoning quality vs larger models.
+
+- No conversation memory unless implemented manually.
+
+---
+
+# V. Results & Evaluation
+
+(Write your screenshots + observations here)
+
+Suggested content:
+
+- Screenshot of frontend UI (light + dark mode)
+
+- Model loading time is 5~10 min (deploying locally)
+
+- Average inference latency is 10~20 seconds 
+
+- RAM usage is averagely >= 12GB when running in Docker (locally)
+
+---
+
+# VI. What’s Next
+
 Planned improvements:
-Image understanding using more advance models such as Qwen2.5-VL-7b
 
-Chat history persistence (MongoDB or SQLite)
+- **Multimodal support** (Qwen2.5-VL for image analysis)
 
-Model selection dropdown (Qwen, TinyLlama, Phi-3, etc.)
+- **Chat history persistence** (MongoDB, SQLite, or Redis)
+
+- **System prompt selector** (Tutor / Creative / Coding modes)
+
+- **Streaming tokens** for smoother UI
+
+- **Model dropdown** (Phi-3, TinyLlama, Mistral, etc.)
+
+- **Azure Blob–based memory** for long-term conversation state
