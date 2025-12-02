@@ -157,7 +157,13 @@ Containerization:
 
 # V. Results & Evaluation
 
-(Write your screenshots + observations here)
+## The Qwen Chat interface
+
+<img width="1280" height="720" alt="Screenshot 2025-12-01 at 10 03 57 PM" src="https://github.com/user-attachments/assets/9beba4d7-650a-4792-9d6f-38d58180e384" />
+<img width="1280" height="720" alt="Screenshot 2025-12-01 at 10 35 39 PM" src="https://github.com/user-attachments/assets/f51dd927-51b1-4b08-983d-ab113b5b0fb3" />
+
+In the UI, user can talk to the Qwen chat bot (dark mode avaliable as well)
+
 
 Suggested content:
 
