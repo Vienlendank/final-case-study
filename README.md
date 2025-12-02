@@ -196,5 +196,5 @@ Planned improvements:
 - **Azure Blob–based memory** for long-term conversation state
 
 # VII. Links 
-GitHub Repo: [<INSERT-REPO-URL>](https://github.com/Vienlendank/final-case-study)
+GitHub Repo: https://github.com/Vienlendank/final-case-study
 Public Cloud App (Render): https://qwen25-chat-latest.onrender.com
