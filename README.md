@@ -20,6 +20,8 @@ This project packages a complete Qwen2.5-1.5B-Instruct chat system into one Dock
 4. **Render Cloud Deployment** – final container deployed using Render Web Services.
 
 ## Architecture Diagram
+![Untitled presentation](https://github.com/user-attachments/assets/7c513a74-dba5-4c17-8c14-a6209ff90991)
+
 ```    
 +--------------------------------------------------------------+
 |                          Browser UI                          |
@@ -192,3 +194,7 @@ Planned improvements:
 - **Model dropdown** (Phi-3, TinyLlama, Mistral, etc.)
 
 - **Azure Blob–based memory** for long-term conversation state
+
+# VII. Links 
+GitHub Repo: [<INSERT-REPO-URL>](https://github.com/Vienlendank/final-case-study)
+Public Cloud App (Render): https://qwen25-chat-latest.onrender.com
